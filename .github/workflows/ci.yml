@@ -1,104 +1,91 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+    push:
+        branches:
+            - main
+            - develop
+    pull_request:
+        branches:
+            - main
+            - develop
 
 jobs:
-  quality:
-    name: Code Quality
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    quality:
+        name: Code Quality
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: mbstring, pcntl, bcmath, intl, zip
+                  coverage: none
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/app/Dockerfile
-          push: false
-          tags: php-v4a-fileedit:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+                  cache: 'npm'
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+            - name: Get Composer cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Install Composer dependencies
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/source" -w /source php-v4a-fileedit:ci composer install --no-interaction --prefer-dist --optimize-autoloader
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
 
-      - name: Cache NPM dependencies
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Install NPM dependencies
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/source" -w /source php-v4a-fileedit:ci bash -c "mise trust && eval \"\$(mise activate bash)\" && mise exec node -- npm ci"
+            - name: Install NPM dependencies
+              run: npm ci
 
-      - name: Run PHP CS Fixer (check mode)
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/source" -w /source php-v4a-fileedit:ci php bin/php-cs-fixer.php check
+            - name: Run PHP CS Fixer (check mode)
+              run: php bin/php-cs-fixer.php check
 
-      - name: Run Prettier (check mode)
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/source" -w /source php-v4a-fileedit:ci bash -c "mise trust && eval \"\$(mise activate bash)\" && mise exec node -- npm run prettier"
+            - name: Run Prettier (check mode)
+              run: npm run prettier
 
-      - name: Run PHPStan
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/source" -w /source php-v4a-fileedit:ci php vendor/bin/phpstan --memory-limit=1024M
+            - name: Run PHPStan
+              run: php vendor/bin/phpstan --memory-limit=1024M
 
-  tests:
-    name: Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    tests:
+        name: Tests
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: mbstring, pcntl, bcmath, intl, zip
+                  coverage: none
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/app/Dockerfile
-          push: false
-          tags: php-v4a-fileedit:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            - name: Get Composer cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
 
-      - name: Install Composer dependencies
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/source" -w /source php-v4a-fileedit:ci composer install --no-interaction --prefer-dist --optimize-autoloader
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Run tests
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/source" -w /source php-v4a-fileedit:ci php vendor/bin/pest
+            - name: Run tests
+              run: php vendor/bin/pest
