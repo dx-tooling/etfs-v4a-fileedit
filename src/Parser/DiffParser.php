@@ -10,15 +10,19 @@ use V4AFileEdit\Matcher\ContextMatcher;
 
 final class DiffParser
 {
-    private const END_PATCH           = '*** End Patch';
-    private const END_FILE            = '*** End of File';
-    private const SECTION_TERMINATORS = [
+    private const string END_PATCH = '*** End Patch';
+    private const string END_FILE  = '*** End of File';
+
+    /** @var array<string> */
+    private const array SECTION_TERMINATORS = [
         self::END_PATCH,
         '*** Update File:',
         '*** Delete File:',
         '*** Add File:',
     ];
-    private const END_SECTION_MARKERS = [
+
+    /** @var array<string> */
+    private const array END_SECTION_MARKERS = [
         self::END_PATCH,
         '*** Update File:',
         '*** Delete File:',
