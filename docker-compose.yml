@@ -3,16 +3,6 @@ services:
         build:
             context: .
             dockerfile: docker/app/Dockerfile
-        container_name: php_v4a_fileedit_app
         volumes:
             - .:/var/www
         working_dir: /var/www
-        command: tail -f /dev/null
-        networks:
-            - default
-        restart: unless-stopped
-
-networks:
-    default:
-        name: php_v4a_fileedit_default
-        driver: bridge

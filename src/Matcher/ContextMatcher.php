@@ -19,6 +19,7 @@ final class ContextMatcher
                 return $endMatch;
             }
             $fallback = $this->findContextCore($lines, $context, $start);
+
             return new ContextMatch($fallback->newIndex, $fallback->fuzz + 10000);
         }
 
@@ -36,21 +37,21 @@ final class ContextMatcher
         }
 
         // Try exact match
-        for ($i = $start; $i < count($lines); $i++) {
+        for ($i = $start; $i < count($lines); ++$i) {
             if ($this->equalsSlice($lines, $context, $i, fn (string $value): string => $value)) {
                 return new ContextMatch($i, 0);
             }
         }
 
         // Try rstrip match
-        for ($i = $start; $i < count($lines); $i++) {
+        for ($i = $start; $i < count($lines); ++$i) {
             if ($this->equalsSlice($lines, $context, $i, fn (string $value): string => rtrim($value))) {
                 return new ContextMatch($i, 1);
             }
         }
 
         // Try strip match
-        for ($i = $start; $i < count($lines); $i++) {
+        for ($i = $start; $i < count($lines); ++$i) {
             if ($this->equalsSlice($lines, $context, $i, fn (string $value): string => trim($value))) {
                 return new ContextMatch($i, 100);
             }
@@ -60,8 +61,8 @@ final class ContextMatcher
     }
 
     /**
-     * @param array<string> $source
-     * @param array<string> $target
+     * @param array<string>            $source
+     * @param array<string>            $target
      * @param callable(string): string $mapFn
      */
     private function equalsSlice(array $source, array $target, int $start, callable $mapFn): bool

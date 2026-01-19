@@ -12,7 +12,7 @@ final readonly class ParsedUpdateDiff
     public function __construct(
         /** @var array<Chunk> */
         public array $chunks,
-        public int $fuzz
+        public int   $fuzz
     ) {
     }
 }

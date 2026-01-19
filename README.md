@@ -86,37 +86,38 @@ This project uses mise-en-place for tool management and Docker Compose for a det
 ### Setup
 
 1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd php-v4a-fileedit
-   ```
+
+    ```bash
+    git clone <repository-url>
+    cd php-v4a-fileedit
+    ```
 
 2. Trust the mise configuration:
-   ```bash
-   mise trust
-   ```
 
-3. Start the Docker container:
-   ```bash
-   docker compose up --build -d
-   ```
+    ```bash
+    mise trust
+    ```
 
-4. Install dependencies:
-   ```bash
-   docker compose exec app composer install
-   docker compose exec app mise trust
-   docker compose exec app mise install
-   ```
+3. Install dependencies (runs in an ephemeral container):
 
-5. Run quality checks:
-   ```bash
-   mise run quality
-   ```
+    ```bash
+    mise run in-app-container composer install
+    mise run in-app-container mise trust
+    mise run in-app-container mise install
+    ```
 
-6. Run tests:
-   ```bash
-   mise run tests
-   ```
+4. Run quality checks:
+
+    ```bash
+    mise run quality
+    ```
+
+5. Run tests:
+    ```bash
+    mise run tests
+    ```
+
+**Note**: Containers are created ephemerally for each command. There's no need to start or stop containers manually - they're created on-demand and automatically removed after execution.
 
 ### Available Commands
 
@@ -127,12 +128,16 @@ This project uses mise-en-place for tool management and Docker Compose for a det
 ### Docker Container
 
 The Docker container provides a consistent PHP 8.4 CLI environment with:
+
 - PHP 8.4 with required extensions (mbstring, pcntl, bcmath, intl, zip)
 - Composer
 - mise-en-place (for managing Node.js and other tools inside the container)
 - Node.js (via mise)
 
-All development commands run inside the container via mise tasks. To execute commands directly in the container:
+Containers are created **ephemerally** for each command execution - they're created on-demand, run the command, and are automatically removed afterward. This ensures a clean, consistent environment for every execution without needing to manage container lifecycle.
+
+All development commands run inside ephemeral containers via mise tasks. To execute commands directly in an ephemeral container:
+
 ```bash
 mise run in-app-container <command>
 ```
@@ -185,6 +190,7 @@ mise run tests
 ```
 
 Or directly:
+
 ```bash
 php vendor/bin/pest
 ```
@@ -198,6 +204,7 @@ The project enforces strict code quality standards:
 - **Prettier**: Code formatting for JSON, YAML, Markdown files
 
 Run all quality checks:
+
 ```bash
 mise run quality
 ```

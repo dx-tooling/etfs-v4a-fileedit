@@ -22,10 +22,12 @@ final class ApplyDiff
      * This parser understands both the create-file syntax (only "+" prefixed
      * lines) and the default update syntax that includes context hunks.
      *
-     * @param string $input The original text content
-     * @param string $diff The V4A diff to apply
-     * @param 'default'|'create' $mode The mode to use ('default' for update, 'create' for new files)
+     * @param string             $input The original text content
+     * @param string             $diff  The V4A diff to apply
+     * @param 'default'|'create' $mode  The mode to use ('default' for update, 'create' for new files)
+     *
      * @return string The modified text
+     *
      * @throws InvalidDiffException
      * @throws OverlappingChunkException
      */
@@ -37,9 +39,12 @@ final class ApplyDiff
             return $this->parser->parseCreateDiff($diffLines);
         }
 
-        $parsed = $this->parser->parseUpdateDiff($diffLines, $input);
+        // Normalize input line endings to Unix style
+        $normalizedInput = str_replace(["\r\n", "\r"], "\n", $input);
 
-        return $this->applyChunks($input, $parsed->chunks);
+        $parsed = $this->parser->parseUpdateDiff($diffLines, $normalizedInput);
+
+        return $this->applyChunks($normalizedInput, $parsed->chunks);
     }
 
     /**
@@ -47,9 +52,15 @@ final class ApplyDiff
      */
     private function applyChunks(string $input, array $chunks): string
     {
-        $origLines = explode("\n", $input);
+        // Handle empty input
+        if ($input === '') {
+            $origLines = [];
+        } else {
+            $origLines = explode("\n", $input);
+        }
+
         $destLines = [];
-        $cursor = 0;
+        $cursor    = 0;
 
         foreach ($chunks as $chunk) {
             if ($chunk->origIndex > count($origLines)) {
@@ -65,7 +76,7 @@ final class ApplyDiff
             }
 
             // Add lines before the chunk
-            for ($i = $cursor; $i < $chunk->origIndex; $i++) {
+            for ($i = $cursor; $i < $chunk->origIndex; ++$i) {
                 $destLines[] = $origLines[$i];
             }
 
@@ -81,8 +92,13 @@ final class ApplyDiff
         }
 
         // Add remaining lines
-        for ($i = $cursor; $i < count($origLines); $i++) {
+        for ($i = $cursor; $i < count($origLines); ++$i) {
             $destLines[] = $origLines[$i];
+        }
+
+        // Join with newlines, but don't add trailing newline for empty result
+        if (count($destLines) === 0) {
+            return '';
         }
 
         return implode("\n", $destLines);

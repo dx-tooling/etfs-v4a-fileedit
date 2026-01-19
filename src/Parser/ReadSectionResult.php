@@ -8,15 +8,15 @@ final readonly class ReadSectionResult
 {
     /**
      * @param array<string> $nextContext
-     * @param array<Chunk> $sectionChunks
+     * @param array<Chunk>  $sectionChunks
      */
     public function __construct(
         /** @var array<string> */
         public array $nextContext,
         /** @var array<Chunk> */
         public array $sectionChunks,
-        public int $endIndex,
-        public bool $eof
+        public int   $endIndex,
+        public bool  $eof
     ) {
     }
 }

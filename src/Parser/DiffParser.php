@@ -7,12 +7,11 @@ namespace V4AFileEdit\Parser;
 use V4AFileEdit\Exception\InvalidContextException;
 use V4AFileEdit\Exception\InvalidDiffException;
 use V4AFileEdit\Matcher\ContextMatcher;
-use V4AFileEdit\Matcher\ContextMatch;
 
 final class DiffParser
 {
-    private const END_PATCH = '*** End Patch';
-    private const END_FILE = '*** End of File';
+    private const END_PATCH           = '*** End Patch';
+    private const END_FILE            = '*** End of File';
     private const SECTION_TERMINATORS = [
         self::END_PATCH,
         '*** Update File:',
@@ -46,7 +45,7 @@ final class DiffParser
             }
 
             $line = $parser->lines[$parser->index];
-            $parser->index++;
+            ++$parser->index;
 
             if (!str_starts_with($line, '+')) {
                 throw new InvalidDiffException("Invalid Add File Line: {$line}");
@@ -60,20 +59,19 @@ final class DiffParser
 
     /**
      * @param array<string> $lines
-     * @param string $input
      */
     public function parseUpdateDiff(array $lines, string $input): ParsedUpdateDiff
     {
-        $parser = new ParserState([...$lines, self::END_PATCH]);
+        $parser     = new ParserState([...$lines, self::END_PATCH]);
         $inputLines = explode("\n", $input);
-        $chunks = [];
-        $cursor = 0;
+        $chunks     = [];
+        $cursor     = 0;
 
         while (!$this->isDone($parser, self::END_SECTION_MARKERS)) {
-            $anchor = $this->readStr($parser, '@@ ');
+            $anchor        = $this->readStr($parser, '@@ ');
             $hasBareAnchor = $anchor === '' && $parser->index < count($parser->lines) && $parser->lines[$parser->index] === '@@';
             if ($hasBareAnchor) {
-                $parser->index++;
+                ++$parser->index;
             }
 
             if (!($anchor || $hasBareAnchor || $cursor === 0)) {
@@ -85,7 +83,7 @@ final class DiffParser
                 $cursor = $this->advanceCursorToAnchor($anchor, $inputLines, $cursor, $parser);
             }
 
-            $section = $this->readSection($parser->lines, $parser->index);
+            $section    = $this->readSection($parser->lines, $parser->index);
             $findResult = $this->contextMatcher->findContext($inputLines, $section->nextContext, $cursor, $section->eof);
 
             if ($findResult->newIndex === -1) {
@@ -138,7 +136,7 @@ final class DiffParser
 
         $current = $state->lines[$state->index];
         if (str_starts_with($current, $prefix)) {
-            $state->index++;
+            ++$state->index;
 
             return substr($current, strlen($prefix));
         }
@@ -155,7 +153,7 @@ final class DiffParser
 
         // Check if anchor exists before cursor
         $foundBefore = false;
-        for ($i = 0; $i < $cursor; $i++) {
+        for ($i = 0; $i < $cursor; ++$i) {
             if ($inputLines[$i] === $anchor) {
                 $foundBefore = true;
                 break;
@@ -164,10 +162,10 @@ final class DiffParser
 
         if (!$foundBefore) {
             // Search forward from cursor
-            for ($i = $cursor; $i < count($inputLines); $i++) {
+            for ($i = $cursor; $i < count($inputLines); ++$i) {
                 if ($inputLines[$i] === $anchor) {
-                    $cursor = $i + 1;
-                    $found = true;
+                    $cursor = $i;
+                    $found  = true;
                     break;
                 }
             }
@@ -176,7 +174,7 @@ final class DiffParser
         if (!$found && !$foundBefore) {
             // Try with trimmed comparison
             $foundBeforeTrimmed = false;
-            for ($i = 0; $i < $cursor; $i++) {
+            for ($i = 0; $i < $cursor; ++$i) {
                 if (trim($inputLines[$i]) === trim($anchor)) {
                     $foundBeforeTrimmed = true;
                     break;
@@ -184,10 +182,10 @@ final class DiffParser
             }
 
             if (!$foundBeforeTrimmed) {
-                for ($i = $cursor; $i < count($inputLines); $i++) {
+                for ($i = $cursor; $i < count($inputLines); ++$i) {
                     if (trim($inputLines[$i]) === trim($anchor)) {
-                        $cursor = $i + 1;
-                        $parser->fuzz++;
+                        $cursor = $i;
+                        ++$parser->fuzz;
                         $found = true;
                         break;
                     }
@@ -203,13 +201,13 @@ final class DiffParser
      */
     private function readSection(array $lines, int $startIndex): ReadSectionResult
     {
-        $context = [];
-        $delLines = [];
-        $insLines = [];
+        $context       = [];
+        $delLines      = [];
+        $insLines      = [];
         $sectionChunks = [];
-        $mode = 'keep';
-        $index = $startIndex;
-        $origIndex = $index;
+        $mode          = 'keep';
+        $index         = $startIndex;
+        $origIndex     = $index;
 
         while ($index < count($lines)) {
             $raw = $lines[$index];
@@ -232,10 +230,10 @@ final class DiffParser
                 throw new InvalidDiffException("Invalid Line: {$raw}");
             }
 
-            $index++;
+            ++$index;
             $lastMode = $mode;
-            $line = $raw !== '' ? $raw : ' ';
-            $prefix = $line[0] ?? '';
+            $line     = $raw !== '' ? $raw : ' ';
+            $prefix   = $line[0] ?? '';
 
             if ($prefix === '+') {
                 $mode = 'add';
@@ -247,7 +245,7 @@ final class DiffParser
                 throw new InvalidDiffException("Invalid Line: {$line}");
             }
 
-            $lineContent = substr($line, 1);
+            $lineContent        = substr($line, 1);
             $switchingToContext = $mode === 'keep' && $lastMode !== $mode;
             if ($switchingToContext && (count($delLines) > 0 || count($insLines) > 0)) {
                 $sectionChunks[] = new Chunk(
@@ -261,7 +259,7 @@ final class DiffParser
 
             if ($mode === 'delete') {
                 $delLines[] = $lineContent;
-                $context[] = $lineContent;
+                $context[]  = $lineContent;
             } elseif ($mode === 'add') {
                 $insLines[] = $lineContent;
             } else {
@@ -290,7 +288,6 @@ final class DiffParser
     }
 
     /**
-     * @param string $diff
      * @return array<string>
      */
     public function normalizeDiffLines(string $diff): array
