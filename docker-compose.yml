@@ -4,5 +4,5 @@ services:
             context: .
             dockerfile: docker/app/Dockerfile
         volumes:
-            - .:/var/www
-        working_dir: /var/www
+            - .:/source
+        working_dir: /source

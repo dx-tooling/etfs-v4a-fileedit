@@ -6,7 +6,7 @@ namespace V4AFileEdit\Parser;
 
 final class ParserState
 {
-    /** @var array<string> */
+    /** @var list<string> */
     public array $lines;
 
     public int $index = 0;
@@ -14,7 +14,7 @@ final class ParserState
     public int $fuzz = 0;
 
     /**
-     * @param array<string> $lines
+     * @param list<string> $lines
      */
     public function __construct(array $lines)
     {

@@ -13,7 +13,7 @@ final class DiffParser
     private const string END_PATCH = '*** End Patch';
     private const string END_FILE  = '*** End of File';
 
-    /** @var array<string> */
+    /** @var list<string> */
     private const array SECTION_TERMINATORS = [
         self::END_PATCH,
         '*** Update File:',
@@ -21,7 +21,7 @@ final class DiffParser
         '*** Add File:',
     ];
 
-    /** @var array<string> */
+    /** @var list<string> */
     private const array END_SECTION_MARKERS = [
         self::END_PATCH,
         '*** Update File:',
@@ -36,7 +36,7 @@ final class DiffParser
     }
 
     /**
-     * @param array<string> $diffLines
+     * @param list<string> $diffLines
      */
     public function parseCreateDiff(array $diffLines): string
     {
@@ -62,7 +62,7 @@ final class DiffParser
     }
 
     /**
-     * @param array<string> $lines
+     * @param list<string> $lines
      */
     public function parseUpdateDiff(array $lines, string $input): ParsedUpdateDiff
     {
@@ -115,7 +115,7 @@ final class DiffParser
     }
 
     /**
-     * @param array<string> $prefixes
+     * @param list<string> $prefixes
      */
     private function isDone(ParserState $state, array $prefixes): bool
     {
@@ -149,7 +149,7 @@ final class DiffParser
     }
 
     /**
-     * @param array<string> $inputLines
+     * @param list<string> $inputLines
      */
     private function advanceCursorToAnchor(string $anchor, array $inputLines, int $cursor, ParserState $parser): int
     {
@@ -201,7 +201,7 @@ final class DiffParser
     }
 
     /**
-     * @param array<string> $lines
+     * @param list<string> $lines
      */
     private function readSection(array $lines, int $startIndex): ReadSectionResult
     {
@@ -292,7 +292,7 @@ final class DiffParser
     }
 
     /**
-     * @return array<string>
+     * @return list<string>
      */
     public function normalizeDiffLines(string $diff): array
     {

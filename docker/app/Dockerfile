@@ -36,10 +36,10 @@ RUN docker-php-ext-install \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /source
 
 RUN mkdir -p ~/.local/state/mise/trusted-configs
-RUN ln -s /var/www ~/.local/state/mise/trusted-configs/
+RUN ln -s /source ~/.local/state/mise/trusted-configs/
 RUN echo 'eval "$(/usr/bin/env mise activate zsh)"' >> ~/.zshrc
 
 # Pre-install Node.js via mise to avoid downloading on every container run

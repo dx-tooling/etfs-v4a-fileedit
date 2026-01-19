@@ -8,9 +8,9 @@ final readonly class Chunk
 {
     public function __construct(
         public int   $origIndex,
-        /** @var array<string> */
+        /** @var list<string> */
         public array $delLines,
-        /** @var array<string> */
+        /** @var list<string> */
         public array $insLines
     ) {
     }

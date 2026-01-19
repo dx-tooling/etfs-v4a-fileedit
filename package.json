@@ -1,5 +1,5 @@
 {
-    "name": "@dx-tooling/php-v4a-fileedit",
+    "name": "@enterprise-tooling-for-symfony/v4a-fileedit",
     "version": "1.0.0",
     "description": "Development tooling configuration for PHP V4A File Edit library",
     "type": "module",

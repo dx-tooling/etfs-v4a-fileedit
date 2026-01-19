@@ -1,5 +1,5 @@
 {
-    "name": "dx-tooling/php-v4a-fileedit",
+    "name": "enterprise-tooling-for-symfony/v4a-fileedit",
     "description": "PHP library for applying V4A diffs to text files",
     "type": "library",
     "license": "MIT",

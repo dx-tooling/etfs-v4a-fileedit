@@ -7,8 +7,8 @@ namespace V4AFileEdit\Matcher;
 final class ContextMatcher
 {
     /**
-     * @param array<string> $lines
-     * @param array<string> $context
+     * @param list<string> $lines
+     * @param list<string> $context
      */
     public function findContext(array $lines, array $context, int $start, bool $eof): ContextMatch
     {
@@ -27,8 +27,8 @@ final class ContextMatcher
     }
 
     /**
-     * @param array<string> $lines
-     * @param array<string> $context
+     * @param list<string> $lines
+     * @param list<string> $context
      */
     private function findContextCore(array $lines, array $context, int $start): ContextMatch
     {
@@ -61,8 +61,8 @@ final class ContextMatcher
     }
 
     /**
-     * @param array<string>            $source
-     * @param array<string>            $target
+     * @param list<string>             $source
+     * @param list<string>             $target
      * @param callable(string): string $mapFn
      */
     private function equalsSlice(array $source, array $target, int $start, callable $mapFn): bool

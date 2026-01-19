@@ -7,10 +7,10 @@ namespace V4AFileEdit\Parser;
 final readonly class ParsedUpdateDiff
 {
     /**
-     * @param array<Chunk> $chunks
+     * @param list<Chunk> $chunks
      */
     public function __construct(
-        /** @var array<Chunk> */
+        /** @var list<Chunk> */
         public array $chunks,
         public int   $fuzz
     ) {

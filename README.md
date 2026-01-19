@@ -20,7 +20,7 @@ A modern, composer-installable PHP library that implements the V4A diff applicat
 ## Installation
 
 ```bash
-composer require dx-tooling/php-v4a-fileedit
+composer require enterprise-tooling-for-symfony/v4a-fileedit
 ```
 
 ## Usage

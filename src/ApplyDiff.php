@@ -48,7 +48,7 @@ final class ApplyDiff
     }
 
     /**
-     * @param array<Chunk> $chunks
+     * @param list<Chunk> $chunks
      */
     private function applyChunks(string $input, array $chunks): string
     {

@@ -7,13 +7,13 @@ namespace V4AFileEdit\Parser;
 final readonly class ReadSectionResult
 {
     /**
-     * @param array<string> $nextContext
-     * @param array<Chunk>  $sectionChunks
+     * @param list<string> $nextContext
+     * @param list<Chunk>  $sectionChunks
      */
     public function __construct(
-        /** @var array<string> */
+        /** @var list<string> */
         public array $nextContext,
-        /** @var array<Chunk> */
+        /** @var list<Chunk> */
         public array $sectionChunks,
         public int   $endIndex,
         public bool  $eof
