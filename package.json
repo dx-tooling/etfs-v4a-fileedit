@@ -1,7 +1,7 @@
 {
     "name": "@dx-tooling/php-v4a-fileedit",
     "version": "1.0.0",
-    "description": "",
+    "description": "Development tooling configuration for PHP V4A File Edit library",
     "type": "module",
     "scripts": {
         "prettier": "prettier --check './{,**/}*.{css,ts,js,mts,mjs,json,yaml,yml,md}' '!**/package-lock.json' '!**/vendor/**'",

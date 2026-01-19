@@ -103,7 +103,6 @@ This project uses mise-en-place for tool management and Docker Compose for a det
     ```bash
     mise run in-app-container composer install
     mise run in-app-container mise trust
-    mise run in-app-container mise install
     ```
 
 4. Run quality checks:
@@ -131,8 +130,8 @@ The Docker container provides a consistent PHP 8.4 CLI environment with:
 
 - PHP 8.4 with required extensions (mbstring, pcntl, bcmath, intl, zip)
 - Composer
-- mise-en-place (for managing Node.js and other tools inside the container)
-- Node.js (via mise)
+- mise-en-place (for managing tools inside the container)
+- Node.js 24 (pre-installed via mise during Docker build to avoid download overhead)
 
 Containers are created **ephemerally** for each command execution - they're created on-demand, run the command, and are automatically removed afterward. This ensures a clean, consistent environment for every execution without needing to manage container lifecycle.
 
@@ -200,7 +199,7 @@ php vendor/bin/pest
 The project enforces strict code quality standards:
 
 - **PHP CS Fixer**: Symfony coding standards with custom rules
-- **PHPStan**: Level 10 (maximum strictness)
+- **PHPStan**: Level 10 (maximum strictness) with 100% type coverage (return, param, property, constant)
 - **Prettier**: Code formatting for JSON, YAML, Markdown files
 
 Run all quality checks:

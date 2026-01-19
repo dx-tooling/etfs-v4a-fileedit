@@ -21,7 +21,6 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$
 RUN apt-get update -y
 RUN apt-get install -y mise
 RUN echo 'eval "$(/usr/bin/env mise activate bash)"' >> ~/.bashrc
-RUN cd /var/www && mise trust
 
 # Clean up to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -44,6 +43,6 @@ RUN ln -s /var/www ~/.local/state/mise/trusted-configs/
 RUN echo 'eval "$(/usr/bin/env mise activate zsh)"' >> ~/.zshrc
 
 # Pre-install Node.js via mise to avoid downloading on every container run
-# Copy mise.toml temporarily to install tools
+# Copy mise.toml and install tools during build
 COPY mise.toml /tmp/mise.toml
 RUN cd /tmp && mise trust && mise install && rm -f mise.toml
