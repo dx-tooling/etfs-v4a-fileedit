@@ -46,11 +46,15 @@ test('applyDiff in default mode with multiple chunks', function (): void {
 });
 
 test('applyDiff in default mode with anchor', function (): void {
+    // Anchor positions cursor AFTER the anchor line.
+    // Context matching then starts from that position.
+    // The anchor line itself should NOT be part of the context.
     $applyDiff = new ApplyDiff();
-    $input     = "line 1\nline 2\nline 3\nline 4";
-    $diff      = "@@ line 2\n-line 2\n+line 2 updated\n line 3";
-    $result    = $applyDiff->applyDiff($input, $diff);
-    expect($result)->toBe("line 1\nline 2 updated\nline 3\nline 4");
+    $input     = "header\nanchor line\nline 2\nline 3\nline 4";
+    // Anchor to "anchor line", cursor moves after it, then context is "line 2", modify "line 3"
+    $diff   = "@@ anchor line\n line 2\n-line 3\n+line 3 updated\n line 4";
+    $result = $applyDiff->applyDiff($input, $diff);
+    expect($result)->toBe("header\nanchor line\nline 2\nline 3 updated\nline 4");
 });
 
 test('applyDiff in default mode with bare anchor', function (): void {
@@ -150,4 +154,30 @@ test('applyDiff handles empty input in default mode', function (): void {
     $diff      = '+line 1';
     $result    = $applyDiff->applyDiff($input, $diff);
     expect($result)->toBe('line 1');
+});
+
+test('applyDiff with anchor positions cursor after anchor line', function (): void {
+    // This test verifies that after finding an anchor, the cursor is positioned
+    // AFTER the anchor line, not AT it.
+    //
+    // Input: "A\nB\nA\nB" - the pattern "A\nB" repeats twice
+    // Index:  0  1  2  3
+    //
+    // Using @@ anchor "A" should find A at index 0, then cursor should be 1 (AFTER anchor).
+    // The context from the diff is ["A", "B"] (context line + deleted line).
+    // Context matching starting from cursor=1 should NOT match at 1 (B≠A), so it
+    // continues and finds the match at index 2.
+    //
+    // BUG: If cursor is incorrectly set to 0 (AT anchor instead of AFTER),
+    // context matching starts at 0 and matches ["A","B"] at indices 0,1.
+    // This causes the chunk to modify the FIRST "B" instead of the SECOND "B".
+    $applyDiff = new ApplyDiff();
+    $input     = "A\nB\nA\nB";
+    // Anchor "A", then context " A" followed by delete/insert of "B"
+    // The intent is to modify the SECOND "B" (at index 3), not the first
+    $diff   = "@@ A\n A\n-B\n+B modified";
+    $result = $applyDiff->applyDiff($input, $diff);
+    // Correct: modify second B -> "A\nB\nA\nB modified"
+    // Bug: would modify first B -> "A\nB modified\nA\nB"
+    expect($result)->toBe("A\nB\nA\nB modified");
 });

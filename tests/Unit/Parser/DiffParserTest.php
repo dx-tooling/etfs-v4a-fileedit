@@ -55,11 +55,17 @@ test('parseUpdateDiff with simple context', function (): void {
 });
 
 test('parseUpdateDiff with anchor', function (): void {
+    // Anchor positions cursor AFTER the anchor line.
+    // Context matching starts from that position.
     $parser = new DiffParser();
-    $input  = "line 1\nline 2\nline 3";
-    $diff   = ['@@ line 2', '-line 2', '+line 2 updated', ' line 3'];
+    $input  = "anchor\nline 2\nline 3";
+    // Anchor to "anchor", context starts with "line 2" (after anchor)
+    $diff   = ['@@ anchor', ' line 2', '-line 3', '+line 3 updated'];
     $parsed = $parser->parseUpdateDiff($diff, $input);
     expect(count($parsed->chunks))->toBe(1);
+    expect($parsed->chunks[0]->origIndex)->toBe(2);
+    expect($parsed->chunks[0]->delLines)->toBe(['line 3']);
+    expect($parsed->chunks[0]->insLines)->toBe(['line 3 updated']);
 });
 
 test('parseUpdateDiff throws on invalid context', function (): void {

@@ -168,7 +168,7 @@ final class DiffParser
             // Search forward from cursor
             for ($i = $cursor; $i < count($inputLines); ++$i) {
                 if ($inputLines[$i] === $anchor) {
-                    $cursor = $i;
+                    $cursor = $i + 1;  // Position cursor AFTER the anchor line
                     $found  = true;
                     break;
                 }
@@ -188,7 +188,7 @@ final class DiffParser
             if (!$foundBeforeTrimmed) {
                 for ($i = $cursor; $i < count($inputLines); ++$i) {
                     if (trim($inputLines[$i]) === trim($anchor)) {
-                        $cursor = $i;
+                        $cursor = $i + 1;  // Position cursor AFTER the anchor line
                         ++$parser->fuzz;
                         $found = true;
                         break;
