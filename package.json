@@ -1,0 +1,13 @@
+{
+    "name": "@dx-tooling/php-v4a-fileedit",
+    "version": "1.0.0",
+    "description": "",
+    "type": "module",
+    "scripts": {
+        "prettier": "prettier --check './{,**/}*.{css,ts,js,mts,mjs,json,yaml,yml,md}' '!**/package-lock.json' '!**/vendor/**'",
+        "prettier:fix": "prettier --write './{,**/}*.{css,ts,js,mts,mjs,json,yaml,yml,md}' '!**/package-lock.json' '!**/vendor/**'"
+    },
+    "devDependencies": {
+        "prettier": "^3.6"
+    }
+}

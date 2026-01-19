@@ -1,0 +1,18 @@
+parameters:
+    level: 10
+    paths:
+        - src/
+        - tests/
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    checkUnreachableIterableForeach: true
+    checkUnusedFunctionParameters: true
+    checkUnusedPrivateProperties: true
+    checkUnusedVariables: true
+    checkExplicitMixedMissingReturn: true
+    checkMissingClosureNativeReturnTypehintRule: true
+    checkMissingCallableSignature: true
+    checkMissingVarDocComment: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
