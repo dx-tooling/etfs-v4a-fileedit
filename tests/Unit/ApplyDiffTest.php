@@ -156,6 +156,34 @@ test('applyDiff handles empty input in default mode', function (): void {
     expect($result)->toBe('line 1');
 });
 
+test('applyDiff handles multibyte UTF-8 characters', function (): void {
+    // Test with various multibyte UTF-8 characters:
+    // - Emojis (4 bytes each): 🎉, 🚀
+    // - Chinese (3 bytes each): 你好
+    // - Accented (2 bytes): café
+    $applyDiff = new ApplyDiff();
+    $input     = "Hello 🎉\n你好世界\ncafé\nend";
+    $diff      = " Hello 🎉\n-你好世界\n+你好宇宙\n café";
+    $result    = $applyDiff->applyDiff($input, $diff);
+    expect($result)->toBe("Hello 🎉\n你好宇宙\ncafé\nend");
+});
+
+test('applyDiff in create mode with multibyte UTF-8', function (): void {
+    $applyDiff = new ApplyDiff();
+    $diff      = "+🚀 Rocket\n+日本語テスト\n+Ñoño";
+    $result    = $applyDiff->applyDiff('', $diff, 'create');
+    expect($result)->toBe("🚀 Rocket\n日本語テスト\nÑoño");
+});
+
+test('applyDiff with multibyte anchor', function (): void {
+    // Anchor line contains multibyte characters
+    $applyDiff = new ApplyDiff();
+    $input     = "header\n函数开始\nline A\nline B";
+    $diff      = "@@ 函数开始\n line A\n-line B\n+line B 修改";
+    $result    = $applyDiff->applyDiff($input, $diff);
+    expect($result)->toBe("header\n函数开始\nline A\nline B 修改");
+});
+
 test('applyDiff with anchor positions cursor after anchor line', function (): void {
     // This test verifies that after finding an anchor, the cursor is positioned
     // AFTER the anchor line, not AT it.
