@@ -1,5 +1,8 @@
 # Enterprise Tooling for Symfony — V4A File Edit library
 
+[![Quality](https://github.com/dx-tooling/etfs-v4a-fileedit/actions/workflows/quality.yml/badge.svg)](https://github.com/dx-tooling/etfs-v4a-fileedit/actions/workflows/quality.yml)
+[![Tests](https://github.com/dx-tooling/etfs-v4a-fileedit/actions/workflows/tests.yml/badge.svg)](https://github.com/dx-tooling/etfs-v4a-fileedit/actions/workflows/tests.yml)
+
 A modern, composer-installable PHP library that implements the V4A diff application algorithm from OpenAI's apply_patch tool. This library allows you to parse and apply V4A-formatted diffs to text files, supporting both create and update modes.
 
 ## Features
